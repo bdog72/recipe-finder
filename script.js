@@ -2,42 +2,64 @@
 // Importing Module
 
 console.log(`Importing Module`);
-// import add, { cart } from './shoppingCart.js';
+import add, { cart } from './shoppingCart.js';
 
-// add('pizza', 2);
-// add('bread', 5);
-// add('apples', 4);
+add('pizza', 2);
+add('bread', 5);
+add('apples', 4);
 
-// console.log(cart);
+console.log(cart);
 
-const ShoppingCart2 = (function () {
-  const cart = [];
-  const shippingCost = 10;
-  const totalPrice = 237;
-  const totalQuantity = 23;
+import cloneDeep from 'lodash-es';
 
-  const addToCart = function (product, quantity) {
-    cart.push({ product, quantity });
-    console.log(`${quantity} ${product} added to cart`);
-  };
+const state = {
+  cart: [
+    { product: 'bread', quantity: 5 },
+    { product: 'pizza', quantity: 5 },
+  ],
+  user: { loggedIn: true },
+};
 
-  const orderStock = function (product, quantity) {
-    console.log(`${quantity} ${product}'s ordered from supplier`);
-  };
+const stateClone = Object.assign({}, state);
+const stateDeepClone = cloneDeep(state);
 
-  return {
-    addToCart,
-    orderStock,
-    cart,
-    totalPrice,
-    totalQuantity,
-  };
-})();
+state.user.loggedIn = false;
 
-ShoppingCart2.addToCart('apple', 4);
-ShoppingCart2.addToCart('pizza', 2);
-ShoppingCart2.orderStock('beer', 12);
-ShoppingCart2.orderStock('wine', 22);
+console.log(stateClone);
+console.log(stateDeepClone);
+
+if (module.hot) {
+  module.hot.accept();
+}
+
+// const ShoppingCart2 = (function () {
+//   const cart = [];
+//   const shippingCost = 10;
+//   const totalPrice = 237;
+//   const totalQuantity = 23;
+
+//   const addToCart = function (product, quantity) {
+//     cart.push({ product, quantity });
+//     console.log(`${quantity} ${product} added to cart`);
+//   };
+
+//   const orderStock = function (product, quantity) {
+//     console.log(`${quantity} ${product}'s ordered from supplier`);
+//   };
+
+//   return {
+//     addToCart,
+//     orderStock,
+//     cart,
+//     totalPrice,
+//     totalQuantity,
+//   };
+// })();
+
+// ShoppingCart2.addToCart('apple', 4);
+// ShoppingCart2.addToCart('pizza', 2);
+// ShoppingCart2.orderStock('beer', 12);
+// ShoppingCart2.orderStock('wine', 22);
 
 // import {
 //   addToCart,
@@ -58,3 +80,8 @@ ShoppingCart2.orderStock('wine', 22);
 // console.log(ShoppingCart.totalPrice);
 
 // console.log(bozo('beer', 10));
+
+// export.addToCart = function (product, quantity) {
+//     cart.push({ product, quantity });
+//     console.log(`${quantity} ${product} added to cart`);
+//   };
