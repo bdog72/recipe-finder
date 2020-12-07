@@ -6,6 +6,11 @@ import icons from 'url:../img/icons.svg';
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 
+// https://forkify-api.herokuapp.com/v2/
+
+console.log(`Bozo Boy`);
+console.log(123);
+
 const recipeContainer = document.querySelector('.recipe');
 
 const timeout = function (s) {
@@ -31,7 +36,7 @@ function renderSpinner(parentEl) {
 const showRecipe = async function () {
   try {
     const id = window.location.hash.slice(1);
-    console.log(id);
+    // console.log(id);
 
     if (!id) {
       return;
@@ -43,7 +48,7 @@ const showRecipe = async function () {
       `https://forkify-api.herokuapp.com/api/v2/recipes/${id}`
     );
     const data = await response.json();
-    console.log(response, data);
+    // console.log(response, data);
 
     if (!response.ok) {
       throw new Error(
@@ -62,7 +67,7 @@ const showRecipe = async function () {
       cookingTime: recipe.cooking_time,
       ingredients: recipe.ingredients,
     };
-    console.log(recipe);
+    // console.log(recipe);
 
     // 2) Rendering Recipe
     const markup = `

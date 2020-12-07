@@ -485,6 +485,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 //
 //
+// https://forkify-api.herokuapp.com/v2/
+console.log(`Bozo Boy`);
+console.log(123);
 const recipeContainer = document.querySelector('.recipe');
 
 const timeout = function (s) {
@@ -509,8 +512,7 @@ function renderSpinner(parentEl) {
 
 const showRecipe = async function () {
   try {
-    const id = window.location.hash.slice(1);
-    console.log(id);
+    const id = window.location.hash.slice(1); // console.log(id);
 
     if (!id) {
       return;
@@ -519,8 +521,7 @@ const showRecipe = async function () {
 
     renderSpinner(recipeContainer);
     const response = await fetch(`https://forkify-api.herokuapp.com/api/v2/recipes/${id}`);
-    const data = await response.json();
-    console.log(response, data);
+    const data = await response.json(); // console.log(response, data);
 
     if (!response.ok) {
       throw new Error(`There was an error: ${data.message} (${response.status})`);
@@ -538,8 +539,8 @@ const showRecipe = async function () {
       servings: recipe.servings,
       cookingTime: recipe.cooking_time,
       ingredients: recipe.ingredients
-    };
-    console.log(recipe); // 2) Rendering Recipe
+    }; // console.log(recipe);
+    // 2) Rendering Recipe
 
     const markup = `
       <figure class="recipe__fig">
@@ -1835,7 +1836,7 @@ var store = require('../internals/shared-store');
 (module.exports = function (key, value) {
   return store[key] || (store[key] = value !== undefined ? value : {});
 })('versions', []).push({
-  version: '3.8.0',
+  version: '3.8.1',
   mode: IS_PURE ? 'pure' : 'global',
   copyright: '© 2020 Denis Pushkarev (zloirock.ru)'
 });
@@ -6582,7 +6583,8 @@ if (isForced(NUMBER, !NativeNumber(' 0o1') || !NativeNumber('0b1') || NativeNumb
 
   for (var keys = DESCRIPTORS ? getOwnPropertyNames(NativeNumber) : ( // ES3:
   'MAX_VALUE,MIN_VALUE,NaN,NEGATIVE_INFINITY,POSITIVE_INFINITY,' + // ES2015 (in case, if modules with ES2015 Number statics required before):
-  'EPSILON,isFinite,isInteger,isNaN,isSafeInteger,MAX_SAFE_INTEGER,' + 'MIN_SAFE_INTEGER,parseFloat,parseInt,isInteger').split(','), j = 0, key; keys.length > j; j++) {
+  'EPSILON,isFinite,isInteger,isNaN,isSafeInteger,MAX_SAFE_INTEGER,' + 'MIN_SAFE_INTEGER,parseFloat,parseInt,isInteger,' + // ESNext
+  'fromString,range').split(','), j = 0, key; keys.length > j; j++) {
     if (has(NativeNumber, key = keys[j]) && !has(NumberWrapper, key)) {
       defineProperty(NumberWrapper, key, getOwnPropertyDescriptor(NativeNumber, key));
     }
@@ -9263,14 +9265,21 @@ var TypedArrayConstructorsList = {
   Float32Array: 4,
   Float64Array: 8
 };
+var BigIntArrayConstructorsList = {
+  BigInt64Array: 8,
+  BigUint64Array: 8
+};
 
 var isView = function isView(it) {
+  if (!isObject(it)) return false;
   var klass = classof(it);
-  return klass === 'DataView' || has(TypedArrayConstructorsList, klass);
+  return klass === 'DataView' || has(TypedArrayConstructorsList, klass) || has(BigIntArrayConstructorsList, klass);
 };
 
 var isTypedArray = function (it) {
-  return isObject(it) && has(TypedArrayConstructorsList, classof(it));
+  if (!isObject(it)) return false;
+  var klass = classof(it);
+  return has(TypedArrayConstructorsList, klass) || has(BigIntArrayConstructorsList, klass);
 };
 
 var aTypedArray = function (it) {
