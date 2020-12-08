@@ -2,7 +2,7 @@
   "name": "recipe-finder",
   "version": "1.0.0",
   "description": "",
-  "main": "clean.js",
+  "default": "index.html",
   "scripts": {
     "start": "parcel index.html",
     "build": "parcel build index.html --dist-dir ./dist"
@@ -11,12 +11,9 @@
     "type": "git",
     "url": "git+https://github.com/bdog72/recipe-finder.git"
   },
+  "keywords": [],
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/bdog72/recipe-finder/issues"
-  },
-  "homepage": "https://github.com/bdog72/recipe-finder#readme",
   "devDependencies": {
     "parcel": "^2.0.0-beta.1",
     "sass": "^1.26.10"
@@ -25,5 +22,9 @@
     "core-js": "^3.6.5",
     "fractional": "^1.0.0",
     "regenerator-runtime": "^0.13.7"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/bdog72/recipe-finder/issues"
+  },
+  "homepage": "https://github.com/bdog72/recipe-finder#readme"
 }

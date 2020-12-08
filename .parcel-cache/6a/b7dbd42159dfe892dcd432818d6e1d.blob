@@ -232,11 +232,6 @@ body {
   font-weight: 600;
 }
 
-.search-results .results a {
-  display: block !important;
-  color: red !important;
-}
-
 .header {
   grid-area: head;
   background-color: #f9f5f3;
