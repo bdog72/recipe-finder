@@ -2,14 +2,15 @@
 //
 
 import * as model from './model';
-import recipeView from './views/recipeView.js';
+import recipeView from './views/recipeView';
 
 // import icons from 'url:../img/icons.svg';
 
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
-
-console.log(123);
+1;
+console.log(1);
+console.log('B');
 
 const recipeContainer = document.querySelector('.recipe');
 
@@ -31,12 +32,13 @@ const controlRecipes = async function () {
     // Rendering Recipe
     recipeView.render(model.state.recipe);
   } catch (err) {
-    alert(err);
+    recipeView.renderError();
+    // recipeView.renderError(`${err} 👽👽 Bozo Boy`);
   }
 };
 
-['hashchange', 'load'].forEach(event => {
-  window.addEventListener(event, controlRecipes);
-});
+const init = function () {
+  recipeView.addHadlerRender(controlRecipes);
+};
 
-// window.addEventListener('hashchange', showRecipe);
+init();
