@@ -4,19 +4,17 @@
 import * as model from './model';
 import recipeView from './views/recipeView';
 
-// import icons from 'url:../img/icons.svg';
+import searchView from './views/searchView';
+import resultsView from './views/resultsView';
 
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
-1;
-console.log(1);
-console.log('B');
 
-const recipeContainer = document.querySelector('.recipe');
+import { async } from 'regenerator-runtime';
 
-// https://forkify-api.herokuapp.com/v2
-
-///////////////////////////////////////
+if (module.hot) {
+  module.hot.accept();
+}
 
 const controlRecipes = async function () {
   try {
@@ -33,12 +31,30 @@ const controlRecipes = async function () {
     recipeView.render(model.state.recipe);
   } catch (err) {
     recipeView.renderError();
-    // recipeView.renderError(`${err} 👽👽 Bozo Boy`);
+  }
+};
+
+const controlSearchResults = async function () {
+  try {
+    resultsView.renderSpinner();
+
+    // 1) Get Search Query
+    const query = searchView.getQuery();
+    if (!query) return;
+
+    // Load Search Results
+    await model.loadSearchResults(query);
+
+    // 2) Render results
+    resultsView.render(model.state.search.results);
+  } catch (err) {
+    console.log(err);
   }
 };
 
 const init = function () {
   recipeView.addHadlerRender(controlRecipes);
+  searchView.addHandlerSearch(controlSearchResults);
 };
 
 init();
