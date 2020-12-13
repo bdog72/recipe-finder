@@ -22,11 +22,11 @@ export default class View {
 
   renderSpinner() {
     const markup = `
-    <div class="spinner">
-    <svg>
-    <use href="${icons}#icon-loader"></use>
-    </svg>
-    </div>
+      <div class="spinner">
+        <svg>
+         <use href="${icons}#icon-loader"></use>
+        </svg>
+      </div>
     `;
     this._clear();
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
@@ -37,7 +37,7 @@ export default class View {
       <div class="error">
         <div>
           <svg>
-          <use href="${icons}#icon-alert-triangle"></use>
+            <use href="${icons}#icon-alert-triangle"></use>
           </svg>
         </div>
         <p>${message}</p>
@@ -52,7 +52,7 @@ export default class View {
       <div class="message">
         <div>
           <svg>
-          <use href="${icons}#icon-smile"></use>
+            <use href="${icons}#icon-smile"></use>
           </svg>
         </div>
         <p>${message}</p>
