@@ -509,7 +509,10 @@ const controlRecipes = async function () {
 
     if (!id) return;
 
-    _recipeView.default.renderSpinner(); // Loading Recipe
+    _recipeView.default.renderSpinner(); // 0) Update Results View to mark selected search result
+
+
+    _resultsView.default.update(model.getSearchResultsPage()); // Loading Recipe
 
 
     await model.loadRecipe(id); // Rendering Recipe
@@ -548,12 +551,23 @@ const controlPagination = function (goToPage) {
   _paginationView.default.render(model.state.search);
 };
 
+const controlServings = function (newServings) {
+  // Update Recipe Servings in (state)
+  model.updateServings(newServings); // Update The Recipe View
+  // recipeView.render(model.state.recipe);
+
+  _recipeView.default.update(model.state.recipe);
+};
+
 const init = function () {
   _recipeView.default.addHadlerRender(controlRecipes);
 
+  _recipeView.default.addHandlerUpdateServings(controlServings);
+
   _searchView.default.addHandlerSearch(controlSearchResults);
 
-  _paginationView.default.addHandlerClick(controlPagination);
+  _paginationView.default.addHandlerClick(controlPagination); // controlServings();
+
 };
 
 init();
@@ -563,7 +577,7 @@ init();
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getSearchResultsPage = exports.loadSearchResults = exports.loadRecipe = exports.state = void 0;
+exports.updateServings = exports.getSearchResultsPage = exports.loadSearchResults = exports.loadRecipe = exports.state = void 0;
 
 var _regeneratorRuntime = require("regenerator-runtime");
 
@@ -638,6 +652,15 @@ const getSearchResultsPage = function (page = state.search.page) {
 };
 
 exports.getSearchResultsPage = getSearchResultsPage;
+
+const updateServings = function (newServings) {
+  state.recipe.ingredients.forEach(ing => {
+    ing.quantity = ing.quantity * newServings / state.recipe.servings;
+  });
+  state.recipe.servings = newServings;
+};
+
+exports.updateServings = updateServings;
 },{"regenerator-runtime":"52ZGc","./config":"F1wIw","./helpers":"1IjzK"}],"52ZGc":[function(require,module,exports) {
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
@@ -1466,6 +1489,15 @@ class RecipeView extends _View.default {
     });
   }
 
+  addHandlerUpdateServings(handler) {
+    this._parentElement.addEventListener('click', function (e) {
+      const btn = e.target.closest('.btn--update-servings');
+      if (!btn) return;
+      const updateTo = +btn.dataset.updateTo;
+      if (updateTo > 0) handler(updateTo);
+    });
+  }
+
   _generateMarkup() {
     return `
       <figure class="recipe__fig">
@@ -1491,12 +1523,12 @@ class RecipeView extends _View.default {
           <span class="recipe__info-text">servings</span>
 
           <div class="recipe__info-buttons">
-            <button class="btn--tiny btn--increase-servings">
+            <button class="btn--tiny btn--update-servings" data-update-to="${this._data.servings - 1}">
               <svg>
                 <use href="${_icons.default}#icon-minus-circle"></use>
               </svg>
             </button>
-            <button class="btn--tiny btn--increase-servings">
+            <button class="btn--tiny btn--update-servings" data-update-to="${this._data.servings + 1}">
               <svg>
                 <use href="${_icons.default}#icon-plus-circle"></use>
               </svg>
@@ -2061,7 +2093,8 @@ class View {
   _data;
 
   render(data) {
-    if (!data || Array.isArray(data) && data.length === 0) return this.renderError();
+    // if (!data || (Array.isArray(data) && data.length === 0))
+    //   return this.renderError();
     this._data = data;
 
     const markup = this._generateMarkup();
@@ -2069,6 +2102,34 @@ class View {
     this._clear();
 
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
+  }
+
+  update(data) {
+    if (!data || Array.isArray(data) && data.length === 0) return this.renderError();
+    this._data = data;
+
+    const newMarkup = this._generateMarkup();
+
+    const newDOM = document.createRange().createContextualFragment(newMarkup);
+    const newElements = Array.from(newDOM.querySelectorAll('*'));
+    const curElements = Array.from(this._parentElement.querySelectorAll('*')); // console.log(curElements);
+    // console.log(newElements);
+
+    newElements.forEach((newEl, i) => {
+      const curEl = curElements[i]; // console.log(curEl, newEl.isEqualNode(curEl));
+      // Updates Changed Text
+
+      if (!newEl.isEqualNode(curEl) && newEl.firstChild?.nodeValue.trim() !== '') {
+        curEl.textContent = newEl.textContent;
+      } // Updates Changed Attributes
+
+
+      if (!newEl.isEqualNode(curEl)) {
+        Array.from(newEl.attributes).forEach(attr => {
+          return curEl.setAttribute(attr.name, attr.value);
+        });
+      }
+    });
   }
 
   _clear() {
@@ -13988,9 +14049,10 @@ class ResultsView extends _View.default {
   }
 
   _generateMarkupPreview(result) {
+    const id = window.location.hash.slice(1);
     return `
       <li class="preview">
-        <a class="preview__link" href="#${result.id}">
+        <a class="preview__link ${result.id === id ? 'preview__link--active' : ''}" href="#${result.id}">
           <figure class="preview__fig">
             <img src="${result.image}" alt="${result.title}" />
           </figure>
