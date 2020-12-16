@@ -1,5 +1,7 @@
 
 
-/node_modules
-/junk
+node_modules
+junk
 /src copy
+dist
+.parcel-cache
