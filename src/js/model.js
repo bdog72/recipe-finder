@@ -2,9 +2,9 @@
 //
 
 import { async } from 'regenerator-runtime';
-import { API_URL, RES_PER_PAGE } from './config';
+import { API_URL, KEY, RES_PER_PAGE } from './config';
 
-import { getJSON } from './helpers';
+import { getJSON, sendJSON } from './helpers';
 
 export const state = {
   recipe: {},
@@ -50,7 +50,7 @@ export const loadSearchResults = async function (query) {
   try {
     state.search.query = query;
     const data = await getJSON(`${API_URL}?search=${query}`);
-    console.log(data);
+    // console.log(data);
 
     state.search.results = data.data.recipes.map(rec => {
       return {
@@ -85,6 +85,10 @@ export const updateServings = function (newServings) {
   state.recipe.servings = newServings;
 };
 
+const persistBookmarks = function () {
+  localStorage.setItem('bookmarks', JSON.stringify(state.bookmarks));
+};
+
 export const addBookmark = function (recipe) {
   // Add Bookmark
   state.bookmarks.push(recipe);
@@ -93,6 +97,8 @@ export const addBookmark = function (recipe) {
   if (recipe.id === state.recipe.id) {
     state.recipe.bookmarked = true;
   }
+
+  persistBookmarks();
 };
 
 export const deleteBookmark = function (id) {
@@ -104,5 +110,55 @@ export const deleteBookmark = function (id) {
   // Mark Current Recipe As Not Bookmarked
   if (id === state.recipe.id) {
     state.recipe.bookmarked = false;
+  }
+
+  persistBookmarks();
+};
+
+const init = function () {
+  const storage = localStorage.getItem('bookmarks');
+
+  if (storage) {
+    state.bookmarks = JSON.parse(storage);
+  }
+};
+
+init();
+
+console.log(state.bookmarks);
+
+export const uploadRecipe = async function (newRecipe) {
+  try {
+    const ingredients = Object.entries(newRecipe)
+      .filter(entry => entry[0].startsWith('ingredient') && entry[1] !== '')
+      .map(ing => {
+        const ingArr = ing[1].replaceAll(' ', '').split(',');
+
+        if (ingArr.length !== 3) {
+          throw new Error(`Wrong Format Bozo Boy! Please use correct format.`);
+        }
+
+        const [quantity, unit, description] = ingArr;
+
+        return {
+          quantity: quantity ? +quantity : null,
+          unit,
+          description,
+        };
+      });
+    const recipe = {
+      title: newRecipe.title,
+      source_url: newRecipe.sourceUrl,
+      image_url: newRecipe.image,
+      publisher: newRecipe.publisher,
+      cooking_time: +newRecipe.cookingTime,
+      servings: +newRecipe.servings,
+      ingredients,
+    };
+
+    const data = await sendJSON(`${API_URL}?key=${KEY}`, recipe);
+    console.log(data);
+  } catch (err) {
+    throw err;
   }
 };
